@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset=utf-8/>
+	<title>Circles</title>
+	<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no'/>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+		}
+	</style>
+</head>
+<body>
+
+<canvas id="circles" width="1024" height="768"></canvas>
+
+<script>
+
+	var canvas = document.getElementById('circles');
+	var ctx = canvas.getContext('2d');
+
+	var radius = 30;
+	var opacity = .7;
+
+	var data = [
+		{
+			x: 200,
+			y: 200,
+			v: 10
+		},
+		{
+			x: 230,
+			y: 230,
+			v: 20
+		},
+		{
+			x: 250,
+			y: 210,
+			v: 30
+		},
+		{
+			x: 270,
+			y: 190,
+			v: 40
+		},
+		{
+			x: 300,
+			y: 220,
+			v: 100
+		},
+		{
+			x: 300,
+			y: 260,
+			v: 200
+		},
+		{
+			x: 320,
+			y: 210,
+			v: 300
+		},
+		{
+			x: 300,
+			y: 160,
+			v: 200
+		},
+		{
+			x: 380,
+			y: 160,
+			v: 3000
+		},
+		{
+			x: 380,
+			y: 110,
+			v: 3000
+		},
+		{
+			x: 320,
+			y: 190,
+			v: 3000
+		}
+	];
+
+	var styles = {
+		blue: {
+			edgeValue: 0,
+			color: [0, 0, 255, 0.7]
+		},
+		green: {
+			edgeValue: 100,
+			color: [0, 255, 0, 0.7]
+		},
+		red: {
+			edgeValue: 1000,
+			color: [255, 0, 0, 0.7]
+		}
+	};
+
+	var layers = {};
+
+	for (var prop in styles) {
+		if(styles.hasOwnProperty(prop)) {
+
+			var c = document.createElement('canvas');
+			c.width = canvas.width;
+			c.height = canvas.height;
+
+			var cx = c.getContext('2d');
+
+			var cc = document.createElement('canvas');
+			cc.width = radius * 2;
+			cc.height = radius * 2;
+
+			var ccx = cc.getContext('2d');
+
+			var cColor = styles[prop].color;
+
+			ccx.fillStyle = 'rgba(' + cColor[0] + ',' + cColor[1] + ',' + cColor[2] + ',' + cColor[3] + ')';
+
+			ccx.beginPath();
+			ccx.arc(radius, radius, radius, 0, Math.PI * 2, true);
+			ccx.closePath();
+			ccx.fill();
+
+			layers[prop] = {
+				color: styles[prop].color,
+				edgeValue: styles[prop].edgeValue,
+				canvas: c,
+				ctx: cx,
+				canvasC: cc,
+				ctxC: ccx,
+				objects: []
+			};
+
+		}
+	}
+
+	data.forEach(function(o) {
+		var layer = o.v < styles.green.edgeValue ? layers.blue : o.v < styles.red.edgeValue ? layers.green : layers.red;
+		layer.ctx.drawImage(layer.canvasC, o.x, o.y);
+		layer.objects.push(o);
+	});
+
+	ctx.fillStyle = '#000000';
+	ctx.fillRect(0, 0, layers[prop].canvas.width / 3, layers[prop].canvas.height);
+
+	for(prop in layers) {
+		if(layers.hasOwnProperty(prop)) {
+			var image = layers[prop].ctx
+					.getImageData(0, 0, layers[prop].canvas.width, layers[prop].canvas.height);
+			preventSaturation(image.data, layers[prop].color);
+			layers[prop].ctx.putImageData(image, 0, 0);
+
+			ctx.drawImage(layers[prop].canvas, 0, 0);
+		}
+	}
+
+	function preventSaturation (d, s) {
+		var rgb255 = raRGBA255(s);
+
+		for (var i = 0; i < d.length; i += 4) {
+			d[i] = Math.min(d[i], rgb255[0]);
+			d[i + 1] = Math.min(d[i + 1], rgb255[1]);
+			d[i + 2] = Math.min(d[i + 2], rgb255[2]);
+			d[i + 3] = Math.min(d[i + 3], rgb255[3]);
+		}
+	}
+
+	function raRGBA255 (s) {
+
+		return [
+			s[0],
+			s[1],
+			s[2],
+			255 * s[3]
+		];
+	}
+
+	function raHexToRGB (s) {
+		var hexREGEXP = /^#([0-9A-Za-z]{3,6})$/;
+		var parsedHEX = s.match(hexREGEXP);
+
+		if (!parsedHEX) {
+			return [0, 0, 0];
+		}
+
+		return [
+			parseInt(parsedHEX[1].slice(0, 2), 16),
+			parseInt(parsedHEX[1].slice(2, 4), 16),
+			parseInt(parsedHEX[1].slice(4), 16)
+		];
+	}
+
+</script>
+
+</body>
+</html>
