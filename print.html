@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+    }
+
+    body,
+    html {
+      -webkit-print-color-adjust: exact;
+    }
+
+    html {
+      /*background: #000;*/
+    }
+
+    body {
+      /*background: yellow;*/
+    }
+
+    @page {
+      /*size: A4 portrait;*/
+      size: 1240px 1754px;
+      margin: 0;
+    }
+
+    .main {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 24px 48px 48px;
+      /*background: #4d7898;*/
+    }
+
+    @media print {
+      html,
+      body {
+        /*width: 21cm;
+        min-height: 29.7cm;*/
+      }
+
+      .main {
+        width: 1240px;
+        /* width: 1090px; /* 32px margins */
+        /* width: 1116px; /* 24px margins */
+        /* width: 1142px; /* 16px margins */
+        /* width: 1180px; /* 0 margins */
+        min-height: 1754px;
+        padding: 48px 48px;
+      }
+    }
+
+    .header,
+    .footer,
+    .section {
+      flex-basis: 100%;
+      border: 10px solid #000;
+    }
+
+    .header,
+    .footer {
+      min-height: 100px;
+      background: #7ed321;
+    }
+
+    .section {
+      min-height: 500px;
+      /*background: mediumpurple;*/
+      margin-bottom: auto;
+    }
+
+    .header {
+      margin-bottom: 20px;
+    }
+
+    .footer {
+
+    }
+
+    h2 {
+      margin: 100px 0;
+    }
+  </style>
+  <title>Title</title>
+</head>
+<body>
+  <div class="main">
+    <h2>margin</h2>
+    <div class="header">1<span></span><span></span></div>
+    <div class="section">2<span></span><span></span></div>
+    <div class="footer">3<span></span><span></span></div>
+  </div>
+</body>
+</html>
